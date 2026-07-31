@@ -21,7 +21,7 @@ resource "azurerm_container_group" "hellogo" {
 
   container {
     name   = "hellogo"
-    image  = "ghcr.io/borisovcloud/devops2079/hellogo:latest"
+    image  = "ghcr.io/borisovcloud/devops2079/hellogo:${var.image_tag}"
     cpu    = "0.5"
     memory = "0.5"
 

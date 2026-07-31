@@ -42,13 +42,8 @@ variable "admin_username" {
   default     = "azureuser"
 }
 
-# variable "ghcr_username" {
-#   description = "GitHub username for GitHub Container Registry authentication."
-#   type        = string
-# }
-
-# variable "ghcr_token" {
-#   description = "GitHub Personal Access Token with read:packages scope for GHCR."
-#   type        = string
-#   sensitive   = true
-# }
+variable "image_tag" {
+  description = "Tag of the Docker image to deploy."
+  type        = string
+  default     = "latest"
+}
