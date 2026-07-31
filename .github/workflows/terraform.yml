@@ -44,7 +44,7 @@ jobs:
           # Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.
           name: github-oidc-token.jwt
           # A file, directory or wildcard pattern that describes what to upload.
-          path: github-oidc-token.jwt
+          path: terraform_local/github-oidc-token.jwt
 
 
       - name: Login to Azure
@@ -68,7 +68,7 @@ jobs:
           # Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.
           name: azure-access-token.jwt
           # A file, directory or wildcard pattern that describes what to upload.
-          path: azure-access-token.jwt
+          path: terraform_local/azure-access-token.jwt
 
 
       - name: Show Azure Account Info
