@@ -4,75 +4,36 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "Action to perform"
+        description: "Terraform action"
         required: true
         type: choice
         options:
           - apply
           - destroy
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   terraform:
-    name: terraform ${{ inputs.action }}
+    name: Terraform ${{ inputs.action }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     defaults:
       run:
         working-directory: terraform_local
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Save GitHub OIDC token to file
-        shell: bash
-        run: |
-          response="$(
-            curl --fail --silent --show-error \
-              -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api%3A%2F%2FAzureADTokenExchange"
-          )"
-
-          jq -r '.value' <<< "$response" > github-oidc-token.jwt
-
-      - name: Upload an Artifact
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          # Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.
-          name: github-oidc-token.jwt
-          # A file, directory or wildcard pattern that describes what to upload.
-          path: terraform_local/github-oidc-token.jwt
-
-
-      - name: Login to Azure
+      - name: Login to Azure with OIDC
         uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Save Azure access token to file
-        shell: bash
-        run: |
-          az account get-access-token \
-            --resource https://management.azure.com/ \
-            --query accessToken \
-            --output tsv > azure-access-token.jwt
-
-      - name: Upload an Artifact
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          # Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.
-          name: azure-access-token.jwt
-          # A file, directory or wildcard pattern that describes what to upload.
-          path: terraform_local/azure-access-token.jwt
-
-
-      - name: Show Azure Account Info
-        run: az account show
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
@@ -80,13 +41,20 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
       - name: Terraform Plan
+        shell: bash
         run: |
-          if [ "${{ inputs.action }}" = "destroy" ]; then
+          if [[ "${{ inputs.action }}" == "destroy" ]]; then
             terraform plan -destroy -out=tfplan
           else
-            terraform plan -out=tfplan
+            terraform plan -out=tfplan -var="image_tag=latest"
           fi
 
-      - name: Terraform ${{ inputs.action }}
+      - name: Terraform Apply
         run: terraform apply -auto-approve tfplan

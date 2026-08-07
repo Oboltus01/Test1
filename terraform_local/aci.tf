@@ -1,29 +1,22 @@
-resource "azurerm_resource_group" "aci_rg" {
-  name     = "rg-hellogo-aci"
-  location = "eastus"
-  tags     = var.tags
+data "azurerm_resource_group" "aci_rg" {
+  name = "rg-roman-test1-aci"
 }
 
 resource "azurerm_container_group" "hellogo" {
-  name                = "aci-hellogo"
-  location            = azurerm_resource_group.aci_rg.location
-  resource_group_name = azurerm_resource_group.aci_rg.name
+  name                = "aci-roman-test1"
+  location            = data.azurerm_resource_group.aci_rg.location
+  resource_group_name = data.azurerm_resource_group.aci_rg.name
   ip_address_type     = "Public"
-  dns_name_label      = "hellogo-${var.tags["owner"] == "demo owner" ? "demo" : var.tags["owner"]}"
+  dns_name_label      = "roman-test1-2079"
   os_type             = "Linux"
+  restart_policy      = "Always"
   tags                = var.tags
-
-  #   image_registry_credential {
-  #     server   = "ghcr.io"
-  #     username = var.ghcr_username
-  #     password = var.ghcr_token
-  #   }
 
   container {
     name   = "hellogo"
-    image  = "ghcr.io/borisovcloud/devops2079/hellogo:${var.image_tag}"
-    cpu    = "0.5"
-    memory = "0.5"
+    image  = "ghcr.io/oboltus01/test1/hellogo:${var.image_tag}"
+    cpu    = 0.5
+    memory = 0.5
 
     ports {
       port     = 8080
@@ -33,6 +26,6 @@ resource "azurerm_container_group" "hellogo" {
 }
 
 output "hellogo_url" {
+  description = "Public URL of the hellogo application"
   value       = "http://${azurerm_container_group.hellogo.fqdn}:8080"
-  description = "URL to access the hellogo application"
 }

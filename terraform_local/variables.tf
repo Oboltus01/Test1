@@ -9,13 +9,14 @@ variable "workspace_suffix" {
 }
 
 variable "tags" {
+  description = "Tags assigned to Azure resources"
   type        = map(string)
-  description = "A map of tags to assign to the resources."
-  default = {
-    "owner"       = "demo owner",
-    "environment" = "demo"
-  }
 
+  default = {
+    owner       = "Roman"
+    environment = "dev"
+    project     = "Test1"
+  }
 }
 
 variable "vm_name" {

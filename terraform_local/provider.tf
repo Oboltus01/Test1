@@ -14,13 +14,14 @@ terraform {
     }
   }
   backend "azurerm" {
-    use_cli              = true                      # Can also be set via `ARM_USE_CLI` environment variable.
-    use_azuread_auth     = true                      # Can also be set via `ARM_USE_AZUREAD` environment variable.
-    storage_account_name = "tfstatestorage2079"      # Can be passed via `-backend-config=`"storage_account_name=<storage account name>"` in the `init` command.
-    container_name       = "tfstate-container"       # Can be passed via `-backend-config=`"container_name=<container name>"` in the `init` command.
-    key                  = "anton.terraform.tfstate" # Can be passed via `-backend-config=`"key=<blob key name>"` in the `init` command.
-  }
+    resource_group_name  = "rg-roman-tfstate"
+    storage_account_name = "tfstateoboltus012079"
+    container_name       = "tfstate"
+    key                  = "test1.terraform.tfstate"
 
+    use_cli          = true
+    use_azuread_auth = true
+  }
 }
 
 provider "azurerm" {
