@@ -1,0 +1,5 @@
+---
+environment_name: "Development"
+http_port: 80
+page_color: "#198754"
+client_max_body_size: "50M"

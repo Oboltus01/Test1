@@ -1,0 +1,8 @@
+---
+site_title: "Automated DevOps Node"
+app_dir: "/var/www/html"
+
+active_services:
+  - "Nginx Web Server"
+  - "Firewall Security Module"
+  - "System Telemetry Collector"

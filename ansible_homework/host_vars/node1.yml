@@ -1,0 +1,5 @@
+---
+environment_name: "Production"
+http_port: 80
+page_color: "#0d6efd"
+client_max_body_size: "10M"

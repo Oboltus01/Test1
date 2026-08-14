@@ -1,0 +1,21 @@
+# Lesson recordings and screenshots
+*.mp4
+Image*.jpg
+Image*.jpeg
+Image*.png
+Screenshot_*.png
+
+# Personal backup and notes
+kubernetes_roman_backup/
+Команды.txt
+
+# Ansible temporary files
+*.retry
+
+# Terraform temporary and sensitive files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log

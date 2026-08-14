@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_title | default("Default Server Title") }}</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #212529;
+        }
+
+        header {
+            padding: 24px;
+            color: white;
+            background: {{ page_color }};
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        dt {
+            font-weight: bold;
+        }
+
+        dd {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>{{ site_title }}</h1>
+    <p>Environment: {{ environment_name }}</p>
+</header>
+
+<main>
+    <h2>Server Information</h2>
+
+    <dl>
+        <dt>Hostname</dt>
+        <dd>{{ ansible_hostname }}</dd>
+
+        <dt>Operating system</dt>
+        <dd>{{ ansible_distribution }} {{ ansible_distribution_version }}</dd>
+
+        <dt>IP address</dt>
+        <dd>{{ ansible_default_ipv4.address | default("Unknown") }}</dd>
+
+        <dt>Total memory</dt>
+        <dd>{{ ansible_memtotal_mb }} MB</dd>
+
+        <dt>CPU cores</dt>
+        <dd>{{ ansible_processor_vcpus | default("Unknown") }}</dd>
+
+        <dt>Nginx port</dt>
+        <dd>{{ http_port }}</dd>
+    </dl>
+
+    <h3>Active Services</h3>
+
+    <ul>
+{% for service in active_services %}
+        <li>{{ service }}</li>
+{% endfor %}
+    </ul>
+</main>
+</body>
+</html>
