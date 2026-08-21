@@ -22,7 +22,7 @@ spec:
             - containerPort: 80
           readinessProbe:
             httpGet:
-              path: /shalom.html
+              path: /
               port: 80
             periodSeconds: 1
           livenessProbe:
