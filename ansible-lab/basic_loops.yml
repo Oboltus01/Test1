@@ -1,0 +1,19 @@
+---
+- name: Demonstrate Basic Loops
+  hosts: webservers
+  become: true
+
+  vars:
+    packages:
+      - curl
+      - git
+      - htop
+      - unzip
+
+  tasks:
+    - name: Install packages using loop
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop: "{{ packages }}"

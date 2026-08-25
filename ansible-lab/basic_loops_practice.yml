@@ -1,0 +1,43 @@
+---
+- name: Demonstrate Basic Loops
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Create directories
+      ansible.builtin.file:
+        path: "/tmp/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - app
+        - config
+        - logs
+
+    - name: Create files
+      ansible.builtin.file:
+        path: "/tmp/{{ item }}"
+        state: touch
+        mode: '0644'
+      loop:
+        - file1.txt
+        - file2.txt
+
+    - name: Show simple loop values
+      ansible.builtin.debug:
+        msg: "Current item is {{ item }}"
+      loop:
+        - one
+        - two
+        - three
+
+    - name: Show developer roles
+      ansible.builtin.debug:
+        msg: "{{ item.name }} has role {{ item.role }}"
+      loop:
+        - name: alice
+          group: devops
+          role: editor
+        - name: bob
+          group: developers
+          role: admin

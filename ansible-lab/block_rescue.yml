@@ -1,0 +1,19 @@
+---
+- name: Demonstrate Block Rescue Always
+  hosts: webservers
+
+  tasks:
+    - name: Test block rescue always
+      block:
+        - name: Task that fails
+          command: /bin/false
+
+      rescue:
+        - name: Rescue task
+          debug:
+            msg: "An error occurred inside the block"
+
+      always:
+        - name: Always task
+          debug:
+            msg: "This task always runs"
