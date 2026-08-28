@@ -1,0 +1,60 @@
+@'
+CALICO / MINIKUBE — Lesson18
+============================
+
+1. Запуск Minikube с Calico как CNI:
+
+minikube start -p lesson18 --driver=docker --cni=calico
+
+
+2. Проверка состояния кластера:
+
+minikube status -p lesson18
+
+kubectl get nodes
+
+
+3. Проверка, что Calico запущен:
+
+kubectl get pods -A | Select-String -Pattern "calico"
+
+
+Ожидаемый результат примерно:
+
+kube-system   calico-kube-controllers-...   1/1   Running
+kube-system   calico-node-...               1/1   Running
+
+
+4. Проверка DaemonSet Calico:
+
+kubectl get daemonset -A | Select-String -Pattern "calico"
+
+
+Ожидаемый результат:
+
+kube-system   calico-node   1   1   1   1   1   kubernetes.io/os=linux
+
+
+5. Проверка CNI-конфигурации внутри Minikube:
+
+minikube -p lesson18 ssh -- "ls -la /etc/cni/net.d/"
+
+
+6. Дополнительная подробная проверка:
+
+kubectl get pods -n kube-system -o wide
+
+kubectl get daemonset calico-node -n kube-system
+
+kubectl get deployment calico-kube-controllers -n kube-system
+
+
+ВАЖНО
+======
+
+Calico в этой работе устанавливался как CNI при создании/запуске
+Minikube-профиля lesson18:
+
+minikube start -p lesson18 --driver=docker --cni=calico
+
+То есть отдельный kubectl apply для установки Calico нам не требовался.
