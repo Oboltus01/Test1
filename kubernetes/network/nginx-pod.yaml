@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: net-demo
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "6Mi"
+        cpu: "250m"
+      limits:
+        memory: "32Mi"
+        cpu: "500m"
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: net-demo
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: net-clients
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "6Mi"
+        cpu: "250m"
+      limits:
+        memory: "32Mi"
+        cpu: "500m"
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: net-clients
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: net-untrusted
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "6Mi"
+        cpu: "250m"
+      limits:
+        memory: "32Mi"
+        cpu: "500m"
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      periodSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: net-untrusted
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP

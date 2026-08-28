@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: net-demo
+  labels:
+    purpose: applications
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: net-clients
+  labels:
+    purpose: clients
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: net-untrusted
+  labels:
+    purpose: untrusted
