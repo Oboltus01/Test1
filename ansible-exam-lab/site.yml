@@ -1,0 +1,30 @@
+---
+- name: Rolling deployment of corporate application
+  hosts: webservers
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+
+  pre_tasks:
+    - name: Validate encrypted database password
+      ansible.builtin.assert:
+        that:
+          - db_password is defined
+          - db_password | length >= 12
+        fail_msg: "Encrypted database password is missing."
+        quiet: true
+      no_log: true
+
+  roles:
+    - role: webserver
+
+  post_tasks:
+    - name: Verify application health
+      ansible.builtin.uri:
+        url: "http://localhost:{{ webserver_port }}"
+        status_code: 200
+        return_content: false
+      register: health_check
+      retries: 3
+      delay: 2
+      until: health_check.status == 200
