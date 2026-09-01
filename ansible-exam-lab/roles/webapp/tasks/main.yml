@@ -1,0 +1,35 @@
+---
+- name: Select OS-specific web service
+  ansible.builtin.set_fact:
+    web_service_name: "{{ 'apache2' if ansible_facts['os_family'] == 'Debian' else 'httpd' }}"
+
+- name: Update Debian package cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Update RedHat package cache
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Install appropriate web server
+  ansible.builtin.package:
+    name: "{{ web_service_name }}"
+    state: present
+
+- name: Deploy Enterprise Portal page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Ensure web service is running and enabled
+
+- name: Ensure web service is running
+  ansible.builtin.service:
+    name: "{{ web_service_name }}"
+    state: started
+    enabled: true
