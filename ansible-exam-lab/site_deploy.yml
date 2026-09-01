@@ -1,0 +1,29 @@
+---
+- name: Run maintenance checks
+  ansible.builtin.import_playbook: maintenance_check.yml
+
+- name: Deploy database credentials
+  ansible.builtin.import_playbook: deploy_db_credentials.yml
+
+- name: Perform zero-downtime rolling deployment
+  hosts: webservers
+  become: true
+  serial: 1
+
+  pre_tasks:
+    - name: Remove server from load balancer
+      ansible.builtin.debug:
+        msg: "Removing {{ inventory_hostname }} from service load balancer..."
+
+  roles:
+    - role: webapp
+
+  post_tasks:
+    - name: Verify web application health
+      ansible.builtin.uri:
+        url: http://localhost:80
+        status_code: 200
+
+    - name: Return server to load balancer
+      ansible.builtin.debug:
+        msg: "Re-adding {{ inventory_hostname }} back to load balancer..."
