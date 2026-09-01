@@ -1,6 +1,0 @@
----
-deployment_environment: production
-webserver_port: 80
-webserver_doc_root: /var/www/html
-application_packages:
-  - curl
