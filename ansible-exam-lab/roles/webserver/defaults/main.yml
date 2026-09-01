@@ -1,3 +1,0 @@
----
-webserver_port: 80
-webserver_doc_root: /var/www/html
