@@ -1,0 +1,48 @@
+---
+- name: Perform pre-flight maintenance checks
+  hosts: production
+  become: true
+
+  tasks:
+    - name: Update Debian package cache before diagnostics
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Update RedHat package cache before diagnostics
+      ansible.builtin.dnf:
+        update_cache: true
+      when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: Install diagnostic utilities
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - htop
+        - unzip
+
+    - name: Check disk usage with automatic error handling
+      block:
+        - name: Read root filesystem disk usage
+          ansible.builtin.shell: |
+            set -o pipefail
+            df -P / | awk 'NR == 2 {gsub("%", "", $5); print $5}'
+          args:
+            executable: /bin/bash
+          register: disk_usage
+          changed_when: false
+          failed_when: disk_usage.stdout | int > 80
+
+      rescue:
+        - name: Display disk usage warning
+          ansible.builtin.debug:
+            msg: "Disk usage threshold exceeded! Triggering automated log cleanup..."
+
+      always:
+        - name: Append execution timestamp to maintenance log
+          ansible.builtin.shell:
+            cmd: 'printf "%s\\n" "{{ ansible_date_time.iso8601 }}" >> /tmp/maintenance.log'
+          changed_when: false
