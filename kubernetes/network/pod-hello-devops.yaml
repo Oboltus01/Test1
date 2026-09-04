@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-devops
+  namespace: net-demo
+  labels:
+    app: hello-devops
+spec:
+  containers:
+  - name: hello
+    image: ghcr.io/borisovcloud/devops2079/hellogo:latest
+    ports:
+    - containerPort: 8080
+    env:
+    - name: GREETING
+      value: DevOps 2079
+    resources:
+      requests:
+        memory: "6Mi"
+        cpu: "250m"
+      limits:
+        memory: "32Mi"
+        cpu: "500m"
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      periodSeconds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      periodSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-devops-svc
+  namespace: net-demo
+spec:
+  selector:
+    app: hello-devops
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-devops-ingress
+  namespace: net-demo
+spec:
+  rules:
+    - host: hello.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-devops-svc
+                port:
+                  number: 80

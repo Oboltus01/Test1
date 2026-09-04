@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-domain
+  namespace: net-demo
+  labels:
+    app: hello-domain
+spec:
+  containers:
+  - name: hello
+    image: ghcr.io/borisovcloud/devops2079/hellogo:latest
+    ports:
+    - containerPort: 8080
+    env:
+    - name: GREETING
+      value: domain
+    resources:
+      requests:
+        memory: "6Mi"
+        cpu: "250m"
+      limits:
+        memory: "32Mi"
+        cpu: "500m"
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      periodSeconds: 1
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      periodSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-domain-svc
+  namespace: net-demo
+spec:
+  selector:
+    app: hello-domain
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-domain-ingress
+  namespace: net-demo
+spec:
+  rules:
+    - host: subdomain.hello.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-domain-svc
+                port:
+                  number: 80
