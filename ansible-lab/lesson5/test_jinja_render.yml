@@ -1,0 +1,22 @@
+---
+- name: Test Advanced Template Rendering
+  hosts: localhost
+  connection: local
+
+  vars:
+    domain_name: "app.example.com"
+    env: "production"
+
+  tasks:
+    - name: Render dynamic template locally for inspection
+      template:
+        src: templates/nginx_load_balancer.conf.j2
+        dest: /tmp/nginx_load_balancer.conf
+
+    - name: Display rendered template
+      command: cat /tmp/nginx_load_balancer.conf
+      register: rendered_conf
+
+    - name: Print output
+      debug:
+        var: rendered_conf.stdout_lines

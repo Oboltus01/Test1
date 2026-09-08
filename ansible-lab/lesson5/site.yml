@@ -1,0 +1,9 @@
+---
+- name: Apply Webserver Role to Web Nodes
+  hosts: webservers
+  become: true
+
+  roles:
+    - role: webserver
+      vars:
+        webserver_port: 8080

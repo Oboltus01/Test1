@@ -1,0 +1,43 @@
+---
+# 1. Dynamically set the correct package name based on OS Family
+- name: Set OS-specific package name
+  set_fact:
+    webserver_service_name: "{{ 'apache2' if ansible_facts['os_family'] == 'Debian' else 'httpd' }}"
+
+# 2. Update repository cache based on OS
+- name: Update package cache (Debian)
+  apt:
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Update package cache (RedHat)
+  dnf:
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'RedHat'
+
+# 3. Install the webserver package using the dynamic variable
+- name: Install webserver package
+  package:
+    name: "{{ webserver_service_name }}"
+    state: present
+
+# 4. Ensure document root directory exists
+- name: Ensure document root directory exists
+  file:
+    path: "{{ webserver_doc_root }}"
+    state: directory
+    mode: '0755'
+
+# 5. Deploy index.html template
+- name: Deploy index.html template
+  template:
+    src: index.html.j2
+    dest: "{{ webserver_doc_root }}/index.html"
+  notify: restart webserver
+
+# 6. Ensure webserver service is started and enabled
+- name: Ensure webserver service is started and enabled
+  service:
+    name: "{{ webserver_service_name }}"
+    state: started
+    enabled: true
