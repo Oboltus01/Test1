@@ -24,6 +24,46 @@ kubectl apply --server-side --force-conflicts -f https://github.com/envoyproxy/g
 kubectl wait --for=condition=Available deployment/envoy-gateway -n envoy-gateway-system --timeout=180s
 ```
 
+## Контекст: урок 18 — сеть и базовые ресурсы
+
+Перед уроком 20 был подготовлен кластерный профиль `lesson18` на базе Minikube и Docker driver с Calico CNI:
+
+```powershell
+minikube start -p lesson18 --driver=docker --cni=calico
+```
+
+### Namespaces и изоляция
+
+Использовались три namespace:
+
+| Namespace | Назначение |
+|---|---|
+| `net-demo` | Демонстрационные приложения и Service |
+| `net-clients` | Разрешённые клиенты |
+| `net-untrusted` | Неразрешённые клиенты |
+
+### NetworkPolicy
+
+В `net-demo` была создана NetworkPolicy для Pod с меткой `app: nginx`. Она:
+
+- разрешала входящий TCP-трафик на порт 80 только от Pod с меткой `access: allowed` из namespace `net-clients`;
+- запрещала доступ из `net-untrusted`;
+- разрешала исходящий DNS-трафик к CoreDNS в `kube-system` по UDP/TCP 53.
+
+Проверка показала, что запрос из `net-untrusted` к `nginx-service` не проходит, а разрешённый клиент из `net-clients` может обращаться к Service.
+
+### ConfigMap и Secret
+
+Также были проверены:
+
+- ConfigMap с приветствием для приложения;
+- Secret с именем пользователя, переданным в Pod через переменную окружения.
+
+### Связь с уроком 20
+
+Урок 18 настроил сетевую основу кластера: namespace, Service, DNS и NetworkPolicy. В уроке 20 поверх этой основы внешний HTTP-маршрут реализован через Gateway API вместо Ingress.
+
+
 ## GatewayClass
 
 В файле [gatewayclass.yaml](gatewayclass.yaml) создан GatewayClass `eg` с контроллером `gateway.envoyproxy.io/gatewayclass-controller`. Статус: `Accepted=True`.
