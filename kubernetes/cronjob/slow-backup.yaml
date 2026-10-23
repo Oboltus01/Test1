@@ -1,0 +1,21 @@
+﻿apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: slow-backup
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Allow
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: slow-backup
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: slow-backup
+              image: busybox
+              command: ["sh", "-c", "echo started at $(date); sleep 90; echo ended at $(date)"]

@@ -1,0 +1,14 @@
+﻿apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jobwilldead
+spec:
+  backoffLimit: 10
+  activeDeadlineSeconds: 20
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: jobwilldead
+          image: busybox
+          command: ["sh", "-c", "echo running migration...; sleep 600; echo done"]
