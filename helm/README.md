@@ -38,3 +38,20 @@ kubectl get deployment podinfo
 
 ## Conclusion
 Helm install, upgrade and rollback completed successfully.
+
+## Additional Helm files
+
+- `myvalues.yaml` - custom configuration with 3 replicas.
+- `podinfovalues.yaml` - default Podinfo chart values.
+- `argovalues.yaml` - default Argo CD chart values.
+- `release.json` - metadata of the installed Podinfo release.
+
+## Export commands
+
+```powershell
+helm show values stefanprodan/podinfo --version 6.15.0 > podinfovalues.yaml
+helm show values argo/argo-cd > argovalues.yaml
+helm get metadata podinfo -o json > release.json
+```
+
+Note: release.json contains release metadata, not the complete Helm release object.
