@@ -55,3 +55,59 @@ helm get metadata podinfo -o json > release.json
 ```
 
 Note: release.json contains release metadata, not the complete Helm release object.
+
+## Lesson continuation - October 30, 2026
+
+### Creating a custom Helm Chart
+
+helm create hello
+
+Chart structure:
+- Chart.yaml
+- values.yaml
+- templates/
+- charts/
+- .helmignore
+
+### Chart validation
+
+helm lint .\helm\hello
+
+Result: 1 chart linted, 0 failed.
+
+### Template rendering
+
+helm template hello .\helm\hello
+
+### Dry run
+
+helm upgrade --install hello .\helm\hello --dry-run=client
+
+### Installation
+
+helm upgrade --install hello .\helm\hello --wait
+
+Result: hello deployed, revision 1.
+
+### Guard template validation
+
+The guard.yaml template uses Helm functions:
+- if
+- fail
+- required
+- default
+- quote
+
+Tests:
+
+1. Production with image.tag=1.27: SUCCESS
+2. Production with image.tag=latest: BLOCKED
+3. Production without image.tag: BLOCKED
+
+Default environment: dev
+Default image: nginx:1.27
+
+### Conclusion
+
+Created and installed a custom Helm Chart.
+Validated templates and tested configuration protection before deployment.

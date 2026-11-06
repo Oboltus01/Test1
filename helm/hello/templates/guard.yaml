@@ -1,0 +1,10 @@
+{{- if and (eq (.Values.environment | default "dev") "prod") (eq (.Values.image.tag | default "") "latest") }}
+{{- fail "Production: image.tag=latest is forbidden" }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-guard
+data:
+  environment: {{ .Values.environment | default "dev" | quote }}
+  image: {{ printf "%s:%s" .Values.image.repository (required "image.tag is required" .Values.image.tag) | quote }}
